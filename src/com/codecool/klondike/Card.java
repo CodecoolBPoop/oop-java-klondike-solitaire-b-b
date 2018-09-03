@@ -77,8 +77,13 @@ public class Card extends ImageView {
         return "The " + "Rank" + rank + " of " + "Suit" + suit;
     }
 
+    /** Returns true if the the cards are different color */
     public static boolean isOppositeColor(Card card1, Card card2) {
-        //TODO
+        if (card1.suit % 5 > 2 && card2.suit % 5 > 2) {
+            return false;
+        } else if (card1.suit % 5 <= 2 && card2.suit % 5 <= 2) {
+            return false;
+        }
         return true;
     }
 
