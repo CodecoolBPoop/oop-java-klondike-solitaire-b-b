@@ -7,8 +7,8 @@ import javafx.stage.Stage;
 
 public class Klondike extends Application {
 
-    private static final double WINDOW_WIDTH = 1400;
-    private static final double WINDOW_HEIGHT = 900;
+    private static final double WINDOW_WIDTH = 1366;
+    private static final double WINDOW_HEIGHT = 768;
 
     public static void main(String[] args) {
         launch(args);
