@@ -13,10 +13,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Game extends Pane {
 
@@ -108,6 +105,15 @@ public class Game extends Pane {
 
     public void refillStockFromDiscard() {
         //TODO
+        stockPile.clear();
+        ListIterator<Card> discardIterator = discardPile.getCards().listIterator(discardPile.getCards().size());
+        while (discardIterator.hasPrevious()) {
+            Card card = discardIterator.previous();
+            card.flip();
+            stockPile.addCard(card);
+            System.out.println(card.getLayoutY());
+        }
+        discardPile.clear();
         System.out.println("Stock refilled from discard pile.");
     }
 
