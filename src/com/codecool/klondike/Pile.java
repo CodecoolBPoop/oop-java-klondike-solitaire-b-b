@@ -92,8 +92,10 @@ public class Pile extends Pane {
 
     public void flipTopCard(){
         Card topCard = this.getTopCard();
-        if (topCard.isFaceDown()){
-            topCard.flip();
+        if (topCard!=null) {
+            if (topCard.isFaceDown()) {
+                topCard.flip();
+            }
         }
     }
 }
