@@ -41,15 +41,15 @@ public class Pile extends Pane {
 
     public int numOfCards() {
         //TODO
-        return 1;
+        return cards.size();
     }
-
     public boolean isEmpty() {
         return cards.isEmpty();
     }
 
     public void clear() {
         //TODO
+        cards.clear();
     }
 
     public void addCard(Card card) {
@@ -88,5 +88,12 @@ public class Pile extends Pane {
         DISCARD,
         FOUNDATION,
         TABLEAU
+    }
+
+    public void flipTopCard(){
+        Card topCard = this.getTopCard();
+        if (topCard.isFaceDown()){
+            topCard.flip();
+        }
     }
 }

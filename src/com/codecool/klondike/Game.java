@@ -108,6 +108,8 @@ public class Game extends Pane {
 
     public void refillStockFromDiscard() {
         //TODO
+        stockPile =discardPile;
+        discardPile.clear();
         System.out.println("Stock refilled from discard pile.");
     }
 
@@ -146,6 +148,7 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+
     }
 
 
@@ -176,8 +179,19 @@ public class Game extends Pane {
             tableauPile.setBlurredBackground();
             tableauPile.setLayoutX(95 + i * 180);
             tableauPile.setLayoutY(275);
+            tableauPile.getCards().addListener(new ListChangeListener<Card>() {
+                @Override
+                public void onChanged(Change<? extends Card> c) {
+                    while(c.next()){
+                        if (c.wasRemoved()){
+                            tableauPile.flipTopCard();
+                        }
+                    }
+                }
+            });
             tableauPiles.add(tableauPile);
             getChildren().add(tableauPile);
+
         }
     }
 
