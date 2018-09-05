@@ -4,7 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -19,6 +21,8 @@ public class Game extends Pane {
 
     private List<Card> deck = new ArrayList<>();
 
+    private Image restart = new Image("button/restart.png");
+    private Button restartButton = new Button("", new ImageView(restart));
     private Pile stockPile;
     private Pile discardPile;
     private List<Pile> foundationPiles = FXCollections.observableArrayList();
@@ -108,15 +112,32 @@ public class Game extends Pane {
         }
     };
 
+    private EventHandler<MouseEvent> onRestartHandler = e -> {
+        charlieFoxtrot();
+        deck = Card.createNewDeck();
+        initPiles();
+        dealCards();
+        initButton();
+    };
+
     public boolean isGameWon() {
         //TODO
         return false;
+    }
+
+    public void charlieFoxtrot() {
+        getChildren().clear();
+        foundationPiles.clear();
+        tableauPiles.clear();
+        stockPile.clear();
+        discardPile.clear();
     }
 
     public Game() {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
+        initButton();
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -124,6 +145,7 @@ public class Game extends Pane {
         card.setOnMouseDragged(onMouseDraggedHandler);
         card.setOnMouseReleased(onMouseReleasedHandler);
         card.setOnMouseClicked(onMouseClickedHandler);
+        restartButton.setOnMouseClicked(onRestartHandler);
     }
 
     public void refillStockFromDiscard() {
@@ -277,4 +299,15 @@ public class Game extends Pane {
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
 
+    public void initButton() {
+        restartButton.setLayoutX(40);
+        restartButton.setLayoutY(40);
+
+        restartButton.setMaxSize(20, 20);
+        restartButton.setMinSize(20, 20);
+
+        restartButton.setStyle("-fx-background-color: transparent; ");
+        getChildren().add(restartButton);
+        System.out.println("Button set");
+    }
 }
