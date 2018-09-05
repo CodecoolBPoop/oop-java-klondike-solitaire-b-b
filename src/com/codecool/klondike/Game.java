@@ -105,16 +105,17 @@ public class Game extends Pane {
 
     public void refillStockFromDiscard() {
         //TODO
-        stockPile.clear();
-        ListIterator<Card> discardIterator = discardPile.getCards().listIterator(discardPile.getCards().size());
-        while (discardIterator.hasPrevious()) {
-            Card card = discardIterator.previous();
-            card.flip();
-            stockPile.addCard(card);
-            System.out.println(card.getLayoutY());
+        if(stockPile.isEmpty()) {
+            int loopNum = discardPile.getCards().size();
+            for(int i = 0; i < loopNum; i++) {
+                Card card = discardPile.getCards().get(discardPile.getCards().size() - 1);
+                card.getContainingPile().getCards().remove(card);
+                stockPile.addCard(card);
+                card.flip();
+            }
+            discardPile.clear();
+            System.out.println("Stock refilled from discard pile.");
         }
-        discardPile.clear();
-        System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
