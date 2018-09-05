@@ -35,11 +35,14 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
+
+    // idea: implement with sideToDest method
     private void putCardToFoundation(Card card){
         for (Pile pile:foundationPiles){
             if (pile.isEmpty()) {
                 if (card.getRank()==1){
                     card.moveToPile(pile);
+                    break;
                 }
             }else if (card.getSuit()==pile.getTopCard().getSuit()){
                 if (card.getRank()-1==pile.getTopCard().getRank()){
@@ -122,7 +125,13 @@ public class Game extends Pane {
 
     public boolean isGameWon() {
         //TODO
-        return false;
+        boolean isWon = true;
+        for (Pile pile : foundationPiles) {
+            if(pile.getCards().size()!=13)
+                isWon = false;
+        }
+        System.out.println("ICU");
+        return isWon;
     }
 
     public void charlieFoxtrot() {
@@ -138,6 +147,19 @@ public class Game extends Pane {
         initPiles();
         dealCards();
         initButton();
+    }
+
+    public void addChangeEventHandlers(Pile pile) {
+        pile.getCards().addListener(new ListChangeListener<Card>() {
+            @Override
+            public void onChanged(Change<? extends Card> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        isGameWon();
+                    }
+                }
+            }
+        });
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -247,6 +269,7 @@ public class Game extends Pane {
             foundationPile.setLayoutX(610 + i * 180);
             foundationPile.setLayoutY(20);
             foundationPiles.add(foundationPile);
+            addChangeEventHandlers(foundationPile);
             getChildren().add(foundationPile);
         }
         for (int i = 0; i < 7; i++) {
