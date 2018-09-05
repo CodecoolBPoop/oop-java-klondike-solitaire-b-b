@@ -31,10 +31,30 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
+    private void putCardToFoundation(Card card){
+        for (Pile pile:foundationPiles){
+            if (pile.isEmpty()) {
+                if (card.getRank()==1){
+                    card.moveToPile(pile);
+                }
+            }else if (card.getSuit()==pile.getTopCard().getSuit()){
+                if (card.getRank()-1==pile.getTopCard().getRank()){
+                    card.moveToPile(pile);
+                }
+            }
+        }
+    }
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
-        if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
+        Pile.PileType type = card.getContainingPile().getPileType();
+        if (type == Pile.PileType.DISCARD || type== Pile.PileType.TABLEAU) {
+
+            if (e.getClickCount() == 2) {
+                putCardToFoundation(card);
+            }
+        }
+        if (type == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
             card.flip();
             card.setMouseTransparent(false);
