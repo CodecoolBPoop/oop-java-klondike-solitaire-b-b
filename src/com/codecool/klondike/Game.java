@@ -2,6 +2,7 @@ package com.codecool.klondike;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -83,12 +84,29 @@ public class Game extends Pane {
         Pile activePile = card.getContainingPile();
         if (activePile.getPileType() == Pile.PileType.STOCK)
             return;
+
+        if (card.isFaceDown()){
+            return;
+        }
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
-
         draggedCards.clear();
-        draggedCards.add(card);
-
+        if (!(activePile.getTopCard()==card)){
+            ObservableList<Card> cards=activePile.getCards();
+            boolean notFound = true;
+            for (int i =0;i<=cards.size()-1;i++){
+                if (notFound){
+                    if (cards.get(i)==card){
+                        notFound = false;
+                        draggedCards.add(cards.get(i));
+                    }
+                }else{
+                    draggedCards.add(cards.get(i));
+                }
+            }
+        }else{
+            draggedCards.add(card);
+        }
         card.getDropShadow().setRadius(20);
         card.getDropShadow().setOffsetX(10);
         card.getDropShadow().setOffsetY(10);
@@ -110,7 +128,9 @@ public class Game extends Pane {
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
-            draggedCards.forEach(MouseUtil::slideBack);
+            for (int i=0; i<=draggedCards.size()-1;i++){
+                MouseUtil.slideBack(card);
+            }
             draggedCards.clear();
         }
     };

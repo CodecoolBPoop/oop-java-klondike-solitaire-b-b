@@ -29,6 +29,10 @@ public class MouseUtil {
                     card.getDropShadow().setOffsetX(0);
                     card.getDropShadow().setOffsetY(0);
                 });
+        List<Card> cards = card.getContainingPile().getCards();
+        for (Card currentCard:cards) {
+            currentCard.toFront();
+        }
     }
 
     public static void slideToDest(List<Card> cardsToSlide, Pile destPile) {
