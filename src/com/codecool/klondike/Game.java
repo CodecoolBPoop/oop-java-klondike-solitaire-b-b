@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,13 +14,22 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBoxBuilder;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import java.util.concurrent.TimeUnit;
 
 import java.util.*;
 
 public class Game extends Pane {
 
     private List<Card> deck = new ArrayList<>();
-
+    private boolean isWin = false;
     private Image restart = new Image("button/restart.png");
     private Button restartButton = new Button("", new ImageView(restart));
     private Pile stockPile;
@@ -172,18 +180,24 @@ public class Game extends Pane {
         initButton();
     }
 
+
+
     public void addChangeEventHandlers(Pile pile) {
         pile.getCards().addListener(new ListChangeListener<Card>() {
             @Override
-            public void onChanged(Change<? extends Card> c) {
-                while (c.next()) {
-                    if (c.wasAdded()) {
-                        isGameWon();
+            public void onChanged(Change<? extends Card> card) {
+                while (card.next()) {
+                    if (card.wasAdded()) {
+                        if (isGameWon()) {
+                            winner();
+                        }
                     }
                 }
             }
         });
     }
+
+
 
     public void addMouseEventHandlers(Card card) {
         card.setOnMousePressed(onMousePressedHandler);
@@ -248,12 +262,14 @@ public class Game extends Pane {
         return result;
     }
 
+
     private boolean isOverPile(Card card, Pile pile) {
         if (pile.isEmpty())
             return card.getBoundsInParent().intersects(pile.getBoundsInParent());
         else
             return card.getBoundsInParent().intersects(pile.getTopCard().getBoundsInParent());
     }
+
 
     private void handleValidMove(Card card, Pile destPile) {
         String msg = null;
@@ -316,6 +332,7 @@ public class Game extends Pane {
         }
     }
 
+
     public void dealCards() {
         Collections.shuffle(deck);
         Iterator<Card> deckIterator = deck.iterator();
@@ -339,11 +356,13 @@ public class Game extends Pane {
 
     }
 
+
     public void setTableBackground(Image tableBackground) {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
+
 
     public void initButton() {
         restartButton.setLayoutX(40);
@@ -356,4 +375,41 @@ public class Game extends Pane {
         getChildren().add(restartButton);
         System.out.println("Button set");
     }
+
+
+    public void winner() {
+        TimeUnit.SECONDS.sleep(1);
+        final Stage myDialog = new Stage();
+        myDialog.initModality(Modality.APPLICATION_MODAL);
+        Button okButton = new Button("CLOSE");
+        Button resButton = new Button("Restart");
+        okButton.setOnAction(new EventHandler<ActionEvent>(){
+
+            @Override
+            public void handle(ActionEvent arg0) {
+                myDialog.close();
+            }
+
+        });
+        resButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                myDialog.close();
+                charlieFoxtrot();
+                deck = Card.createNewDeck();
+                initPiles();
+                dealCards();
+                initButton();
+            }
+        });
+        Scene myDialogScene = new Scene(VBoxBuilder.create()
+                .children(new Text("Gratulationz! You Won!"), okButton)
+                .alignment(Pos.CENTER)
+                .padding(new Insets(10))
+                .build());
+
+        myDialog.setScene(myDialogScene);
+        myDialog.show();
+    }
+
 }
