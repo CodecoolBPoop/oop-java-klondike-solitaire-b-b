@@ -23,9 +23,4 @@ public class Klondike extends Application {
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.show();
     }
-
-    public static void reStart(Stage primaryStage) {
-
-    }
-
 }

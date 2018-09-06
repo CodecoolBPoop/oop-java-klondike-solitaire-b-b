@@ -155,7 +155,10 @@ public class Game extends Pane {
             public void onChanged(Change<? extends Card> c) {
                 while (c.next()) {
                     if (c.wasAdded()) {
-                        isGameWon();
+                        if (isGameWon()) {
+
+                        }
+
                     }
                 }
             }
