@@ -107,13 +107,16 @@ public class Game extends Pane {
         }else{
             draggedCards.add(card);
         }
-        card.getDropShadow().setRadius(20);
-        card.getDropShadow().setOffsetX(10);
-        card.getDropShadow().setOffsetY(10);
+        for (Card currentcard: draggedCards){
+            currentcard.getDropShadow().setRadius(20);
+            currentcard.getDropShadow().setOffsetX(10);
+            currentcard.getDropShadow().setOffsetY(10);
 
-        card.toFront();
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+            currentcard.toFront();
+            currentcard.setTranslateX(offsetX);
+            currentcard.setTranslateY(offsetY);
+        }
+
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
@@ -129,7 +132,7 @@ public class Game extends Pane {
             handleValidMove(card, pile);
         } else {
             for (int i=0; i<=draggedCards.size()-1;i++){
-                MouseUtil.slideBack(card);
+                MouseUtil.slideBack(draggedCards.get(i));
             }
             draggedCards.clear();
         }
