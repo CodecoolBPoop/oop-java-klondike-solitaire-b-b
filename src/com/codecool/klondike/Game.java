@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,12 +25,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import java.util.concurrent.TimeUnit;
 
+import java.sql.SQLOutput;
+import java.sql.Time;
 import java.util.*;
 
 public class Game extends Pane {
 
     private List<Card> deck = new ArrayList<>();
-    private boolean isWin = false;
+
     private Image restart = new Image("button/restart.png");
     private Button restartButton = new Button("", new ImageView(restart));
     private Pile stockPile;
@@ -161,7 +164,6 @@ public class Game extends Pane {
             if(pile.getCards().size()!=13)
                 isWon = false;
         }
-        System.out.println("ICU");
         return isWon;
     }
 
@@ -180,8 +182,6 @@ public class Game extends Pane {
         initButton();
     }
 
-
-
     public void addChangeEventHandlers(Pile pile) {
         pile.getCards().addListener(new ListChangeListener<Card>() {
             @Override
@@ -196,8 +196,6 @@ public class Game extends Pane {
             }
         });
     }
-
-
 
     public void addMouseEventHandlers(Card card) {
         card.setOnMousePressed(onMousePressedHandler);
@@ -262,14 +260,12 @@ public class Game extends Pane {
         return result;
     }
 
-
     private boolean isOverPile(Card card, Pile pile) {
         if (pile.isEmpty())
             return card.getBoundsInParent().intersects(pile.getBoundsInParent());
         else
             return card.getBoundsInParent().intersects(pile.getTopCard().getBoundsInParent());
     }
-
 
     private void handleValidMove(Card card, Pile destPile) {
         String msg = null;
@@ -332,6 +328,11 @@ public class Game extends Pane {
         }
     }
 
+    public void clearListeners() {
+        for (int i = 0; i < 4; i++) {
+            foundationPiles.get(i).clear();
+        }
+    }
 
     public void dealCards() {
         Collections.shuffle(deck);
@@ -356,13 +357,11 @@ public class Game extends Pane {
 
     }
 
-
     public void setTableBackground(Image tableBackground) {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
-
 
     public void initButton() {
         restartButton.setLayoutX(40);
@@ -378,7 +377,6 @@ public class Game extends Pane {
 
 
     public void winner() {
-        TimeUnit.SECONDS.sleep(1);
         final Stage myDialog = new Stage();
         myDialog.initModality(Modality.APPLICATION_MODAL);
         Button okButton = new Button("CLOSE");
@@ -388,6 +386,7 @@ public class Game extends Pane {
             @Override
             public void handle(ActionEvent arg0) {
                 myDialog.close();
+                clearListeners();
             }
 
         });
@@ -403,13 +402,73 @@ public class Game extends Pane {
             }
         });
         Scene myDialogScene = new Scene(VBoxBuilder.create()
-                .children(new Text("Gratulationz! You Won!"), okButton)
+                .children(new Text("Gratulationz! You Won!"), okButton, resButton)
                 .alignment(Pos.CENTER)
                 .padding(new Insets(10))
                 .build());
-
         myDialog.setScene(myDialogScene);
         myDialog.show();
+
     }
 
+
+
+    private ObservableList<Card> gatherAllCards(){
+        Pile allCardsPile = new Pile(Pile.PileType.CHEAT,"cheat",0);
+        for(Pile pile:tableauPiles){
+            for (Card card:pile.getCards()){
+                allCardsPile.addCard(card);
+            }
+        }
+        for(Pile pile:foundationPiles){
+            for (Card card:pile.getCards()){
+                allCardsPile.addCard(card);
+            }
+        }
+        for (Card card: stockPile.getCards()){
+            allCardsPile.addCard(card);
+        }
+        for (Card card: discardPile.getCards()){
+            allCardsPile.addCard(card);
+        }
+        return allCardsPile.getCards();
+    }
+
+
+
+    public void solve(){
+        ObservableList<Card> allCards = gatherAllCards();
+        for (Card card:allCards){
+            if (card.isFaceDown()){
+                card.flip();
+            }
+        }
+        int numberOfRemainingCards = 52;
+        for (int i =0;i<4;i++){
+            Card.CardType type;
+            if (i==0){
+                type = Card.CardType.diamonds;
+            }else if (i==1){
+                type = Card.CardType.hearts;
+            }else if (i==2){
+                type = Card.CardType.clubs;
+            }else{
+                type = Card.CardType.spades;
+            }
+            int currentRankToPut =1;
+            for(int k=0;k<13;k++){
+                for (int j=0; j<numberOfRemainingCards;j++){
+                    Card currentCard = allCards.get(j);
+                    if (currentCard.getRank()==currentRankToPut && currentCard.getSuit()==type){
+                        draggedCards.add(currentCard);
+                        MouseUtil.slideToDest(draggedCards,foundationPiles.get(i));
+                        draggedCards.clear();
+                        currentRankToPut++;
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
 }

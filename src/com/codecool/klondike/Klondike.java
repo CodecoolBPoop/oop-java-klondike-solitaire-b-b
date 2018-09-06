@@ -3,15 +3,10 @@ package com.codecool.klondike;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBoxBuilder;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
+
+import java.awt.event.KeyEvent;
 
 public class Klondike extends Application {
 
@@ -30,6 +25,10 @@ public class Klondike extends Application {
         primaryStage.setTitle("Klondike Solitaire");
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.show();
-        }
+        primaryStage.getScene().setOnKeyPressed(event -> {
+            if(event.getCode()== KeyCode.K){
+                game.solve();
+            }
+        });
     }
-
+}
