@@ -16,7 +16,10 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
+import java.sql.SQLOutput;
+import java.sql.Time;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Game extends Pane {
 
@@ -358,5 +361,64 @@ public class Game extends Pane {
         restartButton.setStyle("-fx-background-color: transparent; ");
         getChildren().add(restartButton);
         System.out.println("Button set");
+    }
+
+    private ObservableList<Card> gatherAllCards(){
+        Pile allCardsPile = new Pile(Pile.PileType.CHEAT,"cheat",0);
+        for(Pile pile:tableauPiles){
+            for (Card card:pile.getCards()){
+                allCardsPile.addCard(card);
+            }
+        }
+        for(Pile pile:foundationPiles){
+            for (Card card:pile.getCards()){
+                allCardsPile.addCard(card);
+            }
+        }
+        for (Card card: stockPile.getCards()){
+            allCardsPile.addCard(card);
+        }
+        for (Card card: discardPile.getCards()){
+            allCardsPile.addCard(card);
+        }
+        return allCardsPile.getCards();
+    }
+
+
+
+    public void solve(){
+        ObservableList<Card> allCards = gatherAllCards();
+        for (Card card:allCards){
+            if (card.isFaceDown()){
+                card.flip();
+            }
+        }
+        int numberOfRemainingCards = 52;
+        for (int i =0;i<4;i++){
+            Card.CardType type;
+            if (i==0){
+                type = Card.CardType.diamonds;
+            }else if (i==1){
+                type = Card.CardType.hearts;
+            }else if (i==2){
+                type = Card.CardType.clubs;
+            }else{
+                type = Card.CardType.spades;
+            }
+            int currentRankToPut =1;
+            for(int k=0;k<13;k++){
+                for (int j=0; j<numberOfRemainingCards;j++){
+                    Card currentCard = allCards.get(j);
+                    if (currentCard.getRank()==currentRankToPut && currentCard.getSuit()==type){
+                        draggedCards.add(currentCard);
+                        MouseUtil.slideToDest(draggedCards,foundationPiles.get(i));
+                        draggedCards.clear();
+                        currentRankToPut++;
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 }
