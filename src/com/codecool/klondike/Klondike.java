@@ -31,9 +31,4 @@ public class Klondike extends Application {
             }
         });
     }
-
-    public static void reStart(Stage primaryStage) {
-
-    }
-
 }
