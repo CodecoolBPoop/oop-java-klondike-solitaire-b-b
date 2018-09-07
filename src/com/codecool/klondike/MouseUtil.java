@@ -103,5 +103,4 @@ public class MouseUtil {
                     y - node.getLayoutY() + node.getLayoutBounds().getHeight() / 2);
         }
     }
-
 }
